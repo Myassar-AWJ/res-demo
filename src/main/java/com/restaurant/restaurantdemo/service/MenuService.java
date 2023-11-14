@@ -4,21 +4,23 @@ package com.restaurant.restaurantdemo.service;
 import com.restaurant.restaurantdemo.model.Menu;
 import com.restaurant.restaurantdemo.repository.MenuRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    private static final Logger logger = LoggerFactory.getLogger(MenuService.class);
+    private final LoggerService logger;
 
     @Autowired
-    public MenuService(MenuRepository menuRepository) {
+    public MenuService(MenuRepository menuRepository,LoggerService logger) {
         this.menuRepository = menuRepository;
+        this.logger=logger;
     }
 
     public List<Menu> getAllMenus(){
@@ -26,7 +28,7 @@ public class MenuService {
             return menuRepository.findAll();
         }catch (Exception e){
             // Log the exception
-            logger.error("Error while retrieving all manus", e);
+            logger.error("Error while retrieving all manus", e.getMessage());
             throw new RuntimeException("Error while retrieving all menus", e);
         }
     }
@@ -35,7 +37,7 @@ public class MenuService {
         try{
             return  menuRepository.findById(id);
         }catch(Exception e){
-            logger.error("Error while retrieving menu by id",e);
+            logger.error("Error while retrieving menu by id",e.getMessage());
             throw  new RuntimeException("Error while retrieving menu by id",e);
         }
     }
@@ -45,7 +47,7 @@ public class MenuService {
         try{
             return  menuRepository.save(menu);
         }catch (Exception e){
-            logger.error("Error while creating menu",e);
+            logger.error("Error while creating menu",e.getMessage());
             throw  new RuntimeException("Error while creating menu",e);
         }
     }
@@ -54,7 +56,7 @@ public class MenuService {
         try{
             menuRepository.deleteById(id);
         }catch (Exception e){
-            logger.error("Error while deleting menu");
+            logger.error("Error while deleting menu",e.getMessage());
             throw new RuntimeException("Error while deleting menu");
         }
     }

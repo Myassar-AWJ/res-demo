@@ -4,21 +4,22 @@ package com.restaurant.restaurantdemo.service;
 import com.restaurant.restaurantdemo.model.Product;
 import com.restaurant.restaurantdemo.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private final LoggerService logger;
 
     @Autowired
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository,LoggerService logger) {
         this.productRepository = productRepository;
+        this.logger=logger;
     }
 
 
@@ -27,7 +28,7 @@ public class ProductService {
             return productRepository.findAll();
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while retrieving all products", e);
+            logger.error("Error while retrieving all products", e.getMessage());
             throw new RuntimeException("Error while retrieving all products", e);
         }
     }
@@ -41,7 +42,7 @@ public class ProductService {
         return productRepository.findById(id);
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while retrieving product by id", e);
+            logger.error("Error while retrieving product by id", e.getMessage());
             throw new RuntimeException("Error while retrieving product by id", e);
         }
     }
@@ -51,7 +52,7 @@ public class ProductService {
         return productRepository.save(product);
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while creating product", e);
+            logger.error("Error while creating product", e.getMessage());
             throw new RuntimeException("Error while creating product", e);
         }
     }
@@ -62,7 +63,7 @@ public class ProductService {
             productRepository.deleteById(id);
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while deleting product by ID", e);
+            logger.error("Error while deleting product by ID", e.getMessage());
             throw new RuntimeException("Error while deleting product by ID: " + id);
         }
     }

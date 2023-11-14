@@ -1,5 +1,8 @@
 package com.restaurant.restaurantdemo.controller;
 
+import com.restaurant.restaurantdemo.model.Product;
+import com.restaurant.restaurantdemo.model.ResponseWithData;
+import com.restaurant.restaurantdemo.service.LoggerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +19,17 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/restaurant")
+@RequestMapping("/api/restaurants")
 public class RestaurantController {
-    private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 
     private final RestaurantService restaurantService;
 
+    private final LoggerService logger;
+
     @Autowired
-    public RestaurantController(RestaurantService restaurantService) {
+    public RestaurantController(RestaurantService restaurantService,LoggerService logger) {
         this.restaurantService = restaurantService;
+        this.logger=logger;
     }
 
     @GetMapping
@@ -41,7 +46,7 @@ public class RestaurantController {
             return ResponseEntity.ok(restaurants);
         } catch (Exception e) {
             // Log the exception for debugging purposes
-            logger.error("An error occurred while processing the request", e);
+            logger.error("An error occurred while processing the request", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
         }
@@ -53,8 +58,21 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public Restaurant createRestaurant(@RequestBody Restaurant Restaurant) {
-        return restaurantService.createRestaurant(Restaurant);
+    public ResponseEntity<ResponseWithData<Restaurant>> createRestaurant(@RequestBody Restaurant Restaurant) {
+        try {
+           var restaurant= restaurantService.createRestaurant(Restaurant);
+            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            // Log the exception
+            logger.error("Error while getting all products", e.getMessage());
+            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>("Error", null);
+            // Return a meaningful error response to the client
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+
+        }
+
     }
 
     @PutMapping("/{RestaurantId}")

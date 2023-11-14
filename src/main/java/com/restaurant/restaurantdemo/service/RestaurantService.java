@@ -16,11 +16,12 @@ import org.slf4j.LoggerFactory;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private static final Logger logger = LoggerFactory.getLogger(RestaurantService.class);
+    private final LoggerService logger;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository,LoggerService logger) {
         this.restaurantRepository = restaurantRepository;
+        this.logger=logger;
     }
 
 
@@ -29,7 +30,7 @@ public class RestaurantService {
             return restaurantRepository.findAll();
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while retrieving all restaurants", e);
+            logger.error("Error while retrieving all restaurants", e.getMessage());
             throw new RuntimeException("Error while retrieving all restaurants", e);
         }
 
@@ -40,7 +41,7 @@ public class RestaurantService {
             return restaurantRepository.findById(RestaurantId);
         }catch (Exception e) {
                 // Log the exception
-                logger.error("Error while retrieving restaurant by id", e);
+                logger.error("Error while retrieving restaurant by id", e.getMessage());
                 throw new RuntimeException("Error while retrieving  restaurant by id", e);
         }
     }
@@ -51,7 +52,7 @@ public class RestaurantService {
         }catch (Exception e) {
             // Log the exception
             logger.error("Error while creating restaurant", e);
-            throw new RuntimeException("Error while creating  restaurant", e);
+            throw new RuntimeException("Error while creating  restaurant", e.getCause());
         }
     }
 
@@ -67,8 +68,8 @@ public class RestaurantService {
             return restaurantRepository.save(existingRestaurant);
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while updating restaurant", e);
-            throw new RuntimeException("Error while updating restaurant", e);
+            logger.error("Error while updating restaurant", e.getMessage());
+            throw new RuntimeException("Error while updating restaurant", e.getCause());
         }
     }
 
@@ -77,7 +78,7 @@ public class RestaurantService {
         restaurantRepository.deleteById(RestaurantId);
         }catch (Exception e) {
             // Log the exception
-            logger.error("Error while deleting restaurant", e);
+            logger.error("Error while deleting restaurant", e.getMessage());
             throw new RuntimeException("Error while deleting  restaurant", e);
         }
     }
