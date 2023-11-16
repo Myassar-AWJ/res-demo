@@ -26,9 +26,9 @@ public class ProductController {
 //    private static final Logger logger = LoggerFactory.getLogger(MenuService.class);
 
     @Autowired
-    public ProductController(ProductService productService,LoggerService logger){
-        this.productService=productService;
-        this.logger=logger;
+    public ProductController(ProductService productService, LoggerService logger) {
+        this.productService = productService;
+        this.logger = logger;
     }
 
 
@@ -39,11 +39,47 @@ public class ProductController {
             ResponseWithData<List<Product>> response = new ResponseWithData<>("Success", products);
             return ResponseEntity.ok(response);
 
-         } catch (Exception e) {
+        } catch (Exception e) {
             // Log the exception
             logger.error("Error while getting all products", e.getMessage());
-            ResponseWithData<List<Product>> errorResponse = new ResponseWithData<>("Error", Collections.emptyList());
-            // Return a meaningful error response to the client
+            ResponseWithData<List<Product>> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+
+        }
+    }
+
+    public ResponseEntity<ResponseWithData<Product>> createProduct(Product product) {
+        try {
+            var newProduct = productService.createProduct(product);
+            ResponseWithData<Product> response = new ResponseWithData<>("Success", newProduct);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error while create product cont", e.getMessage());
+            ResponseWithData<Product> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    public ResponseEntity<ResponseWithData<Product>> updateProduct(long id, Product product) {
+        try {
+            var updatedProduct = productService.updateProduct(id, product);
+            ResponseWithData<Product> response = new ResponseWithData<>("Success", updatedProduct);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error while updating product", e.getMessage());
+            ResponseWithData<Product> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    public ResponseEntity<ResponseWithData<Void>> deleteProduct(Long id) {
+        try {
+            productService.deleteProductById(id);
+            ResponseWithData<Void> response = new ResponseWithData<>("Success");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error while deleting product in cont", e.getMessage());
+            ResponseWithData<Void> errorResponse = new ResponseWithData<>(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 
         }

@@ -3,6 +3,7 @@ package com.restaurant.restaurantdemo.controller;
 import com.restaurant.restaurantdemo.model.Product;
 import com.restaurant.restaurantdemo.model.ResponseWithData;
 import com.restaurant.restaurantdemo.service.LoggerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,31 +34,55 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+    public ResponseEntity<ResponseWithData<List<Restaurant>>> getAllRestaurants() {
         try {
+
             List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+            ResponseWithData<List<Restaurant>> response = new ResponseWithData<>("Success", restaurants);
+            return ResponseEntity.ok(response);
 
-            if (restaurants.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(restaurants);
-
-            }
-            // Return an empty list with a custom message
-
-            return ResponseEntity.ok(restaurants);
-        } catch (Exception e) {
+         } catch (Exception e) {
             // Log the exception for debugging purposes
             logger.error("An error occurred while processing the request", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            ResponseWithData<List<Restaurant>> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 
         }
     }
 
+//    @GetMapping("/{RestaurantId}")
+//    public ResponseEntity<ResponseWithData<Restaurant>> getRestaurantById(@PathVariable Long RestaurantId) {
+//        try{
+//           var restaurant = restaurantService.getRestaurantById(RestaurantId);
+//            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
+//            return ResponseEntity.ok(response);
+//        }catch (Exception e){
+//            // Log the exception
+//            logger.error("Error while  getting restaurant by id in cont", e.getMessage());
+//            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>(e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//
+//    }
+
     @GetMapping("/{RestaurantId}")
-    public Optional<Restaurant> getRestaurantById(@PathVariable Long RestaurantId) {
-        return restaurantService.getRestaurantById(RestaurantId);
+    public ResponseEntity<ResponseWithData<Restaurant>> getRestaurantById(@PathVariable Long RestaurantId) {
+        try {
+            var restaurant = restaurantService.getRestaurantById(RestaurantId)
+                    .orElseThrow(() -> new EntityNotFoundException("Restaurant not found")); // Customize the exception type
+
+            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Handle the specific exception for "Restaurant not found"
+            logger.error("Restaurant not found", e.getMessage());
+            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>("Restaurant not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
     }
 
-    @PostMapping
+//    @PostMapping
+    @PostMapping()
     public ResponseEntity<ResponseWithData<Restaurant>> createRestaurant(@RequestBody Restaurant Restaurant) {
         try {
            var restaurant= restaurantService.createRestaurant(Restaurant);
@@ -66,9 +91,8 @@ public class RestaurantController {
 
         } catch (Exception e) {
             // Log the exception
-            logger.error("Error while getting all products", e.getMessage());
-            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>("Error", null);
-            // Return a meaningful error response to the client
+            logger.error("Error while  creating new restaurant in cont", e.getMessage());
+            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 
         }
@@ -76,12 +100,32 @@ public class RestaurantController {
     }
 
     @PutMapping("/{RestaurantId}")
-    public Restaurant updateRestaurant(@PathVariable Long RestaurantId, @RequestBody Restaurant RestaurantDetails) {
-        return restaurantService.updateRestaurant(RestaurantId, RestaurantDetails);
-    }
+    public ResponseEntity<ResponseWithData<Restaurant>> updateRestaurant(@PathVariable Long RestaurantId, @RequestBody Restaurant RestaurantDetails) {
+        try{
+            var restaurant= restaurantService.updateRestaurant(RestaurantId, RestaurantDetails);
+            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            // Log the exception
+            logger.error("Error while updating restaurant in cont", e.getMessage());
+            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+     }
 
     @DeleteMapping("/{RestaurantId}")
-    public void deleteRestaurant(@PathVariable Long RestaurantId) {
-        restaurantService.deleteRestaurant(RestaurantId);
+    public ResponseEntity<ResponseWithData<Void>> deleteRestaurant(@PathVariable Long RestaurantId) {
+        try {
+            restaurantService.deleteRestaurant(RestaurantId);
+            ResponseWithData<Void> response = new ResponseWithData<>("Success");
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            logger.error("Error while  deleting a  restaurant in cont", e.getMessage());
+            ResponseWithData<Void> errorResponse = new ResponseWithData<>(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+
     }
+
+
 }

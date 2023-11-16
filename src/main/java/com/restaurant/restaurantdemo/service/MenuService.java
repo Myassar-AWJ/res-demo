@@ -35,6 +35,8 @@ public class MenuService {
 
     public Optional<Menu> getMenuById(Long id){
         try{
+//            Menu menu = menuRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+//            Set<Product> products = menu.getProducts();
             return  menuRepository.findById(id);
         }catch(Exception e){
             logger.error("Error while retrieving menu by id",e.getMessage());

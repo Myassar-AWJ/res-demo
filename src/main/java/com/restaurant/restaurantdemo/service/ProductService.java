@@ -3,6 +3,7 @@ package com.restaurant.restaurantdemo.service;
 
 import com.restaurant.restaurantdemo.model.Product;
 import com.restaurant.restaurantdemo.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,11 @@ public class ProductService {
 
     public Product createProduct(Product product) {
         try {
+//            Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+//            Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+//
+//            menu.getProducts().add(product);
+//            menuRepository.save(menu);
         return productRepository.save(product);
         } catch (Exception e) {
             // Log the exception
@@ -57,6 +63,20 @@ public class ProductService {
         }
     }
 
+    public Product updateProduct(Long id,Product product){
+        try{
+            var oldProduct=productRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+            oldProduct.setDescription(product.getDescription());
+            oldProduct.setPlu(product.getPlu());
+            oldProduct.setName(product.getName());
+            oldProduct.setPrice(product.getPrice());
+            oldProduct.setImage(product.getImage());
+            return productRepository.save(oldProduct);
+        }catch (Exception e){
+            logger.error("Error while updating product", e.getMessage());
+            throw new RuntimeException("Error while updating product", e);
+        }
+    }
 
     public void deleteProductById(Long id) {
         try {
