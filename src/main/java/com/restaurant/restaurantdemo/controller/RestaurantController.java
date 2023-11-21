@@ -50,20 +50,6 @@ public class RestaurantController {
         }
     }
 
-//    @GetMapping("/{RestaurantId}")
-//    public ResponseEntity<ResponseWithData<Restaurant>> getRestaurantById(@PathVariable Long RestaurantId) {
-//        try{
-//           var restaurant = restaurantService.getRestaurantById(RestaurantId);
-//            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
-//            return ResponseEntity.ok(response);
-//        }catch (Exception e){
-//            // Log the exception
-//            logger.error("Error while  getting restaurant by id in cont", e.getMessage());
-//            ResponseWithData<Restaurant> errorResponse = new ResponseWithData<>(e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-//        }
-//
-//    }
 
     @GetMapping("/{RestaurantId}")
     public ResponseEntity<ResponseWithData<Restaurant>> getRestaurantById(@PathVariable Long RestaurantId) {
@@ -83,10 +69,10 @@ public class RestaurantController {
 
 //    @PostMapping
     @PostMapping()
-    public ResponseEntity<ResponseWithData<Restaurant>> createRestaurant(@RequestBody Restaurant Restaurant) {
+    public ResponseEntity<ResponseWithData<Restaurant>> createRestaurant(@RequestBody Restaurant restaurant) {
         try {
-           var restaurant= restaurantService.createRestaurant(Restaurant);
-            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", restaurant);
+           var newRestaurant= restaurantService.createRestaurant(restaurant);
+            ResponseWithData<Restaurant> response = new ResponseWithData<>("Success", newRestaurant);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

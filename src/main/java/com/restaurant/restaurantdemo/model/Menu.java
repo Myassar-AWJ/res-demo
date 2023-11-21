@@ -15,7 +15,7 @@ public class Menu {
     private  Long id;
     private  String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "menu_product",
             joinColumns = @JoinColumn(name = "menu_id"),

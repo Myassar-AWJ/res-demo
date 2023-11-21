@@ -1,6 +1,7 @@
 package com.restaurant.restaurantdemo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class Product {
     private Integer plu;
     private String image;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "products")
     private Set<Menu> menus = new HashSet<>();
 }
