@@ -53,6 +53,20 @@ public class MenuController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+//    @GetMapping("/{MenuId}/products")
+//    public ResponseEntity<ResponseWithData<Menu>> findByIdWithProducts(@PathVariable Long MenuId) {
+//        try {
+//            Menu menu = menuService.findByIdWithProducts(MenuId);
+//            ResponseWithData<Menu> response = new ResponseWithData<>("Success", menu);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            logger.error("Error While Getting the Menu in Cont", e.getMessage());
+//            ResponseWithData<Menu> errorResponse = new ResponseWithData<>(e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//    }
+
+
 
     @PostMapping()
     public ResponseEntity<ResponseWithData<Menu>> createMenu(@RequestBody Menu menu) {
